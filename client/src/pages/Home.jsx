@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Loader from "../components/Loader";
 import { getAllReports } from "../services/reportService";
 
 function Home() {
@@ -35,18 +36,30 @@ function Home() {
     (report) => report.status === "Resolved"
   ).length;
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-100">
+        <Loader text="Loading RoadWatch..." />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-100">
 
       {/* Hero */}
       <section className="max-w-7xl mx-auto px-6 py-20 text-center">
         <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 mb-6">
-          RoadWatch
+          🚧 RoadWatch
+
         </h1>
 
         <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-10">
-          Help make roads safer by reporting potholes, damaged roads,
-          broken streetlights, and other infrastructure issues in your city.
+          Building Safer Roads,
+          One Report at a Time.
+
+          Report potholes, damaged roads, broken
+          streetlights and other civic issues in seconds.
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
@@ -71,22 +84,22 @@ function Home() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
           <StatCard
-            value={loading ? "..." : totalReports}
+            value={totalReports}
             title="Road Issues Reported"
           />
 
           <StatCard
-            value={loading ? "..." : pendingReports}
+            value={pendingReports}
             title="Pending"
           />
 
           <StatCard
-            value={loading ? "..." : inProgressReports}
+            value={inProgressReports}
             title="In Progress"
           />
 
           <StatCard
-            value={loading ? "..." : resolvedReports}
+            value={resolvedReports}
             title="Issues Resolved"
           />
 

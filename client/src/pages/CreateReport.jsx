@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { createReport } from "../services/reportService";
+import { toast } from "react-toastify";
 
 function CreateReport() {
   const token = localStorage.getItem("token");
@@ -17,6 +18,8 @@ function CreateReport() {
     severity: "Low",
     image: null,
   });
+
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -38,8 +41,7 @@ function CreateReport() {
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
-      return;
+      toast.error("Geolocation is not supported by your browser.");
     }
 
     navigator.geolocation.getCurrentPosition(
@@ -52,7 +54,7 @@ function CreateReport() {
       },
       (error) => {
         console.error("Location error:", error);
-        alert("Unable to get your location. Please allow location permission.");
+        toast.error("Unable to get your location. Please allow location permission.");
       }
     );
   };
@@ -64,17 +66,17 @@ function CreateReport() {
     const longitude = Number(formData.longitude);
 
     if (formData.title.trim().length < 3) {
-      alert("Title must be at least 3 characters.");
+      toast.error("Title must be at least 3 characters.");
       return;
     }
 
     if (formData.description.trim().length < 10) {
-      alert("Description must be at least 10 characters.");
+      toast.error("Description must be at least 10 characters.");
       return;
     }
 
     if (formData.address.trim().length < 3) {
-      alert("Please enter a valid address.");
+      toast.error("Please enter a valid address.");
       return;
     }
 
@@ -83,7 +85,7 @@ function CreateReport() {
       latitude < -90 ||
       latitude > 90
     ) {
-      alert("Latitude must be between -90 and 90.");
+      toast.error("Latitude must be between -90 and 90.");
       return;
     }
 
@@ -92,16 +94,18 @@ function CreateReport() {
       longitude < -180 ||
       longitude > 180
     ) {
-      alert("Longitude must be between -180 and 180.");
+      toast.error("Longitude must be between -180 and 180.");
       return;
     }
 
     if (formData.image && formData.image.size > 5 * 1024 * 1024) {
-      alert("Image must be smaller than 5 MB.");
+      toast.error("Image must be smaller than 5 MB.");
       return;
     }
 
     try {
+      setSubmitting(true);
+
       const token = localStorage.getItem("token");
 
       await createReport(
@@ -117,7 +121,7 @@ function CreateReport() {
         token
       );
 
-      alert("Report submitted successfully!");
+      toast.success("Report submitted successfully!");
 
       setFormData({
         title: "",
@@ -131,10 +135,12 @@ function CreateReport() {
     } catch (error) {
       console.error("Report submission failed:", error);
 
-      alert(
+      toast.error(
         error.response?.data?.message ||
           "Failed to submit report. Please try again."
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -266,30 +272,72 @@ function CreateReport() {
             <p className="text-sm text-slate-500 mt-2">
               JPG, PNG or WEBP. Maximum size: 5 MB.
             </p>
+
+            {formData.image && (
+              <div className="mt-4">
+                <img
+                  src={URL.createObjectURL(formData.image)}
+                  alt="Preview"
+                  className="w-full h-56 object-cover rounded-xl border"
+                />
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="block font-semibold text-slate-700 mb-2">
-              Severity
-            </label>
-
-            <select
-              name="severity"
-              value={formData.severity}
-              onChange={handleChange}
-              className="w-full border border-slate-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          <div className="grid grid-cols-3 gap-3">
+            <button
+              type="button"
+              onClick={() =>
+                setFormData({ ...formData, severity: "Low" })
+              }
+              className={`py-3 rounded-xl font-semibold transition ${
+                formData.severity === "Low"
+                  ? "bg-green-500 text-white"
+                  : "bg-green-100 text-green-700"
+              }`}
             >
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
+              🟢 Low
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setFormData({ ...formData, severity: "Medium" })
+              }
+              className={`py-3 rounded-xl font-semibold transition ${
+                formData.severity === "Medium"
+                  ? "bg-yellow-500 text-white"
+                  : "bg-yellow-100 text-yellow-700"
+              }`}
+            >
+              🟡 Medium
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setFormData({ ...formData, severity: "High" })
+              }
+              className={`py-3 rounded-xl font-semibold transition ${
+                formData.severity === "High"
+                  ? "bg-red-500 text-white"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              🔴 High
+            </button>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-yellow-400 text-slate-900 font-bold py-4 rounded-xl hover:bg-yellow-300 transition shadow-md"
+            disabled={submitting}
+            className={`w-full font-bold py-4 rounded-xl shadow-md transition ${
+              submitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-yellow-400 hover:bg-yellow-300 text-slate-900"
+            }`}
           >
-            🚧 Submit Report
+            {submitting ? "Submitting..." : "🚧 Submit Report"}
           </button>
         </form>
       </div>

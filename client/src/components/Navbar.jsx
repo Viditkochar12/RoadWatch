@@ -32,9 +32,18 @@ function Navbar() {
           <Link
             to="/"
             onClick={closeMenu}
-            className="text-2xl font-bold text-yellow-400"
+            className="flex items-center gap-3"
           >
-            🚧 RoadWatch
+            <img
+              src="/RoadWatchLogo.png"
+              alt="RoadWatch Logo"
+              className="h-10 w-10 object-contain"
+            />
+
+            <span className="text-2xl font-extrabold tracking-wide">
+              <span className="text-white">Road</span>
+              <span className="text-yellow-400">Watch</span>
+            </span>
           </Link>
 
           {/* Desktop Menu */}

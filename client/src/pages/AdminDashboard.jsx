@@ -5,6 +5,8 @@ import {
   updateReportStatus,
 } from "../services/reportService";
 
+import { toast } from "react-toastify";
+
 function AdminDashboard() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,11 +46,11 @@ function AdminDashboard() {
         )
       );
 
-      alert("Status updated successfully!");
+      toast.success("Status updated successfully!");
     } catch (error) {
       console.error("Status update failed:", error);
 
-      alert(
+      toast.error(
         error.response?.data?.message ||
           "You are not authorized to update this report."
       );
@@ -237,17 +239,19 @@ function AdminDashboard() {
             filteredReports.map((report) => (
               <div
                 key={report._id}
-                className="bg-white rounded-2xl shadow-sm overflow-hidden"
+                className="bg-white rounded-2xl shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
               >
                 <div className="flex flex-col md:flex-row">
 
                   {/* Image */}
                   {report.image && (
-                    <img
-                      src={report.image}
-                      alt={report.title}
-                      className="w-full md:w-56 h-52 md:h-auto object-cover"
-                    />
+                    <div className="overflow-hidden">
+                      <img
+                        src={report.image}
+                        alt={report.title}
+                        className="w-full md:w-56 h-52 md:h-auto object-cover transition duration-500 hover:scale-110"
+                      />
+                    </div>
                   )}
 
                   {/* Report Content */}
@@ -350,7 +354,7 @@ function AdminDashboard() {
 
 function StatCard({ title, value }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6">
+    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-slate-200">
       <p className="text-slate-500 font-medium">
         {title}
       </p>

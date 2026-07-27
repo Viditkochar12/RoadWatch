@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAllReports } from "../services/reportService";
 import ReportMap from "../components/ReportMap";
+import Loader from "../components/Loader";
 
 function Reports() {
   const [reports, setReports] = useState([]);
@@ -44,10 +45,8 @@ function Reports() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-        <p className="text-xl font-semibold text-slate-600">
-          Loading reports...
-        </p>
+      <div className="min-h-screen bg-slate-100">
+        <Loader text="Loading reports..." />
       </div>
     );
   }
@@ -62,7 +61,7 @@ function Reports() {
             Road Reports
           </h1>
 
-          <p className="text-slate-600 mt-2">
+          <p className="text-slate-500 leading-7 mt-2">
             Explore road damage reported by citizens.
           </p>
         </div>
@@ -106,7 +105,7 @@ function Reports() {
         </div>
 
         {/* Result Count */}
-        <p className="text-slate-600 mb-5">
+        <p className="text-slate-500 leading-7 mb-5">
           Showing{" "}
           <span className="font-bold text-slate-900">
             {filteredReports.length}
@@ -121,7 +120,7 @@ function Reports() {
           <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
             <div className="text-5xl mb-4">🔎</div>
 
-            <h2 className="text-xl font-bold text-slate-800">
+            <h2 className="text-2xl font-bold text-slate-800">
               No reports found
             </h2>
 
@@ -134,23 +133,28 @@ function Reports() {
             {filteredReports.map((report) => (
               <div
                 key={report._id}
-                className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition"
+                className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-2xl
+                                                                          hover:-translate-y-2
+                                                                          duration-300
+                                                                          transition-all"
               >
 
                 {/* Image */}
                 {report.image && (
-                  <img
-                    src={report.image}
-                    alt={report.title}
-                    className="w-full h-48 object-cover"
-                  />
+                  <div className="overflow-hidden">
+                      <img
+                          src={report.image}
+                          alt={report.title}
+                          className="w-full h-52 object-cover transition duration-500 hover:scale-110"
+                      />
+                  </div>
                 )}
 
                 <div className="p-6">
 
                   {/* Title + Severity */}
                   <div className="flex justify-between items-start gap-3 mb-3">
-                    <h2 className="text-xl font-bold text-slate-900">
+                    <h2 className="text-2xl font-bold text-slate-900">
                       {report.title}
                     </h2>
 
@@ -168,7 +172,7 @@ function Reports() {
                   </div>
 
                   {/* Description */}
-                  <p className="text-slate-600 mb-5">
+                  <p className="text-slate-500 leading-7 mb-5">
                     {report.description}
                   </p>
 
@@ -177,6 +181,10 @@ function Reports() {
                     📍{" "}
                     {report.location?.address ||
                       "Location unavailable"}
+                  </p>
+
+                  <p className="text-sm text-slate-500 mt-2">
+                    📅 {new Date(report.createdAt).toLocaleDateString()}
                   </p>
 
                   {/* Status */}

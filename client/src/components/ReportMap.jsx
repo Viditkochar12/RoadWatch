@@ -1,6 +1,8 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
 function ReportMap({ reports }) {
+    console.log("Reports received:", reports);
+
   return (
     <div className="w-full h-[500px] rounded-2xl overflow-hidden shadow-md">
       <MapContainer
@@ -16,6 +18,10 @@ function ReportMap({ reports }) {
         {reports.map((report) => {
           const latitude = report.location?.latitude;
           const longitude = report.location?.longitude;
+
+          console.log(report);
+          console.log("Latitude:", latitude);
+          console.log("Longitude:", longitude);
 
           if (latitude == null || longitude == null) {
             return null;
