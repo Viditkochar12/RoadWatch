@@ -145,201 +145,248 @@ function CreateReport() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 px-4 py-12">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900">
-            Report Road Damage
-          </h1>
+    <div className="min-h-screen relative bg-gradient-to-b from-white via-sky-50 to-blue-50 overflow-hidden">
 
-          <p className="text-slate-600 mt-2">
-            Provide details about the road issue so it can be tracked and
-            resolved.
-          </p>
-        </div>
+      {/* Faint blueprint grid backdrop */}
+      <div
+        className="absolute inset-0 opacity-[0.35] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(15,23,42,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.06) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-lg p-8 space-y-6"
-        >
-          <div>
-            <label className="block font-semibold text-slate-700 mb-2">
-              Issue Title
-            </label>
+      {/* Decorative blurred accents */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-300/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-10 right-0 w-[28rem] h-[28rem] bg-blue-300/25 rounded-full blur-3xl pointer-events-none" />
 
-            <input
-              type="text"
-              name="title"
-              placeholder="e.g. Large pothole near main road"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-          </div>
+      <div className="relative px-4 py-14 sm:py-20">
+        <div className="max-w-3xl mx-auto">
 
-          <div>
-            <label className="block font-semibold text-slate-700 mb-2">
-              Description
-            </label>
-
-            <textarea
-              name="description"
-              placeholder="Describe the road damage..."
-              value={formData.description}
-              onChange={handleChange}
-              required
-              rows="5"
-              className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold text-slate-700 mb-2">
-              Address
-            </label>
-
-            <input
-              type="text"
-              name="address"
-              placeholder="e.g. Jaipur, Rajasthan"
-              value={formData.address}
-              onChange={handleChange}
-              required
-              className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-          </div>
-          
-          <button
-            type="button"
-            onClick={getCurrentLocation}
-            className="w-full border-2 border-slate-900 text-slate-900 font-semibold py-3 rounded-xl hover:bg-slate-900 hover:text-white transition"
-          >
-            📍 Use My Current Location
-          </button>
-
-          <div className="grid md:grid-cols-2 gap-5">
-            <div>
-              <label className="block font-semibold text-slate-700 mb-2">
-                Latitude
-              </label>
-
-              <input
-                type="number"
-                step="any"
-                name="latitude"
-                placeholder="26.9124"
-                value={formData.latitude}
-                onChange={handleChange}
-                required
-                className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              />
+          {/* Hero Header */}
+          <div className="mb-10 text-center sm:text-left">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 text-amber-300 text-xs font-semibold tracking-widest uppercase shadow-sm mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
+              🚧 Report Road Damage
             </div>
 
-            <div>
-              <label className="block font-semibold text-slate-700 mb-2">
-                Longitude
-              </label>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 mb-3">
+              Help Improve Your City&apos;s Roads
+            </h1>
 
-              <input
-                type="number"
-                step="any"
-                name="longitude"
-                placeholder="75.7873"
-                value={formData.longitude}
-                onChange={handleChange}
-                required
-                className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block font-semibold text-slate-700 mb-2">
-              Road Damage Photo
-            </label>
-
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleImageChange}
-              className="w-full border border-slate-300 rounded-lg px-4 py-3 bg-white
-                        file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
-                        file:bg-yellow-400 file:text-slate-900 file:font-semibold
-                        hover:file:bg-yellow-300"
-            />
-
-            <p className="text-sm text-slate-500 mt-2">
-              JPG, PNG or WEBP. Maximum size: 5 MB.
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto sm:mx-0">
+              Submit accurate information so authorities can quickly locate
+              and resolve road issues.
             </p>
+          </div>
 
-            {formData.image && (
-              <div className="mt-4">
-                <img
-                  src={URL.createObjectURL(formData.image)}
-                  alt="Preview"
-                  className="w-full h-56 object-cover rounded-xl border"
+          {/* Form Card */}
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white/95 backdrop-blur rounded-3xl shadow-xl shadow-slate-900/5 border border-slate-100 p-6 sm:p-10 space-y-7"
+          >
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Issue Title
+              </label>
+
+              <input
+                type="text"
+                name="title"
+                placeholder="e.g. Large pothole near main road"
+                value={formData.title}
+                onChange={handleChange}
+                required
+                className="w-full h-14 border border-slate-200 rounded-xl px-4 bg-slate-50 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Description
+              </label>
+
+              <textarea
+                name="description"
+                placeholder="Describe the road damage..."
+                value={formData.description}
+                onChange={handleChange}
+                required
+                rows="5"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3.5 bg-slate-50 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition resize-none leading-relaxed"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Address
+              </label>
+
+              <input
+                type="text"
+                name="address"
+                placeholder="e.g. Jaipur, Rajasthan"
+                value={formData.address}
+                onChange={handleChange}
+                required
+                className="w-full h-14 border border-slate-200 rounded-xl px-4 bg-slate-50 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={getCurrentLocation}
+              className="w-full h-14 flex items-center justify-center gap-2 border-2 border-slate-900 text-slate-900 font-semibold rounded-xl hover:bg-slate-900 hover:text-white transition-all duration-200 hover:-translate-y-0.5"
+            >
+              📍 Use My Current Location
+            </button>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Latitude
+                </label>
+
+                <input
+                  type="number"
+                  step="any"
+                  name="latitude"
+                  placeholder="26.9124"
+                  value={formData.latitude}
+                  onChange={handleChange}
+                  required
+                  className="w-full h-12 border border-slate-200 rounded-lg px-3 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
                 />
               </div>
-            )}
-          </div>
 
-          <div className="grid grid-cols-3 gap-3">
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Longitude
+                </label>
+
+                <input
+                  type="number"
+                  step="any"
+                  name="longitude"
+                  placeholder="75.7873"
+                  value={formData.longitude}
+                  onChange={handleChange}
+                  required
+                  className="w-full h-12 border border-slate-200 rounded-lg px-3 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Road Damage Photo
+              </label>
+
+              <label
+                htmlFor="road-damage-photo"
+                className="relative flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 rounded-2xl px-6 py-10 bg-slate-50 hover:bg-amber-50/60 hover:border-amber-400 transition-all duration-200 cursor-pointer text-center"
+              >
+                <span className="text-3xl">📤</span>
+
+                <span className="font-semibold text-slate-700">
+                  {formData.image ? formData.image.name : "Click to upload a photo"}
+                </span>
+
+                <span className="text-sm text-slate-500">
+                  JPG, PNG or WEBP. Maximum size: 5 MB.
+                </span>
+
+                <input
+                  id="road-damage-photo"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleImageChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+              </label>
+
+              {formData.image && (
+                <div className="mt-4">
+                  <img
+                    src={URL.createObjectURL(formData.image)}
+                    alt="Preview"
+                    className="w-full h-56 object-cover rounded-2xl border border-slate-200 shadow-sm"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Severity
+              </label>
+
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, severity: "Low" })
+                  }
+                  className={`py-3.5 rounded-xl font-semibold transition-all duration-200 border-2 hover:-translate-y-0.5 ${
+                    formData.severity === "Low"
+                      ? "bg-green-500 text-white border-green-500 shadow-md shadow-green-500/30"
+                      : "bg-green-50 text-green-700 border-green-100"
+                  }`}
+                >
+                  🟢 Low
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, severity: "Medium" })
+                  }
+                  className={`py-3.5 rounded-xl font-semibold transition-all duration-200 border-2 hover:-translate-y-0.5 ${
+                    formData.severity === "Medium"
+                      ? "bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/30"
+                      : "bg-amber-50 text-amber-700 border-amber-100"
+                  }`}
+                >
+                  🟡 Medium
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, severity: "High" })
+                  }
+                  className={`py-3.5 rounded-xl font-semibold transition-all duration-200 border-2 hover:-translate-y-0.5 ${
+                    formData.severity === "High"
+                      ? "bg-red-500 text-white border-red-500 shadow-md shadow-red-500/30"
+                      : "bg-red-50 text-red-700 border-red-100"
+                  }`}
+                >
+                  🔴 High
+                </button>
+              </div>
+            </div>
+
             <button
-              type="button"
-              onClick={() =>
-                setFormData({ ...formData, severity: "Low" })
-              }
-              className={`py-3 rounded-xl font-semibold transition ${
-                formData.severity === "Low"
-                  ? "bg-green-500 text-white"
-                  : "bg-green-100 text-green-700"
+              type="submit"
+              disabled={submitting}
+              className={`group w-full flex items-center justify-center gap-2 font-bold py-4 rounded-full shadow-lg transition-all duration-200 ${
+                submitting
+                  ? "bg-gray-400 cursor-not-allowed text-white"
+                  : "bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-900 shadow-amber-400/30 hover:shadow-xl hover:shadow-amber-400/40 hover:-translate-y-0.5 active:translate-y-0"
               }`}
             >
-              🟢 Low
+              {submitting ? (
+                "Submitting..."
+              ) : (
+                <>
+                  🚧 Submit Report
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                </>
+              )}
             </button>
-
-            <button
-              type="button"
-              onClick={() =>
-                setFormData({ ...formData, severity: "Medium" })
-              }
-              className={`py-3 rounded-xl font-semibold transition ${
-                formData.severity === "Medium"
-                  ? "bg-yellow-500 text-white"
-                  : "bg-yellow-100 text-yellow-700"
-              }`}
-            >
-              🟡 Medium
-            </button>
-
-            <button
-              type="button"
-              onClick={() =>
-                setFormData({ ...formData, severity: "High" })
-              }
-              className={`py-3 rounded-xl font-semibold transition ${
-                formData.severity === "High"
-                  ? "bg-red-500 text-white"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              🔴 High
-            </button>
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className={`w-full font-bold py-4 rounded-xl shadow-md transition ${
-              submitting
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-yellow-400 hover:bg-yellow-300 text-slate-900"
-            }`}
-          >
-            {submitting ? "Submitting..." : "🚧 Submit Report"}
-          </button>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
