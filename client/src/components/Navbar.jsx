@@ -28,7 +28,7 @@ function Navbar() {
   return (
     <nav className="bg-slate-900 text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between py-5">
           <Link
             to="/"
             onClick={closeMenu}
@@ -50,21 +50,21 @@ function Navbar() {
           <div className="hidden md:flex items-center gap-6">
             <Link
               to="/"
-              className="hover:text-yellow-400 transition-colors"
+              className="font-medium hover:text-yellow-300 transition-all duration-300"
             >
               Home
             </Link>
 
             <Link
               to="/reports"
-              className="hover:text-yellow-400 transition-colors"
+              className="font-medium hover:text-yellow-300 transition-all duration-300"
             >
               Reports
             </Link>
 
             <Link
               to="/create-report"
-              className="hover:text-yellow-400 transition-colors"
+              className="font-medium hover:text-yellow-300 transition-all duration-300"
             >
               Report Damage
             </Link>
@@ -72,7 +72,7 @@ function Navbar() {
             {isLoggedIn && (
               <Link
                 to="/my-reports"
-                className="hover:text-yellow-400 transition-colors"
+                className="font-medium hover:text-yellow-300 transition-all duration-300"
               >
                 My Reports
               </Link>
@@ -81,7 +81,7 @@ function Navbar() {
             {isLoggedIn && (
               <Link
                 to="/profile"
-                className="hover:text-yellow-400 transition-colors"
+                className="font-medium hover:text-yellow-300 transition-all duration-300"
               >
                 Profile
               </Link>
@@ -90,7 +90,7 @@ function Navbar() {
             {isAdmin && (
               <Link
                 to="/admin"
-                className="hover:text-yellow-400 transition-colors"
+                className="font-medium hover:text-yellow-300 transition-all duration-300"
               >
                 Admin
               </Link>
@@ -99,14 +99,14 @@ function Navbar() {
             {isLoggedIn ? (
               <button
                 onClick={handleLogout}
-                className="bg-red-500 px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors cursor-pointer"
+                className="bg-red-500/90 px-5 py-2 rounded-xl font-semibold shadow-md hover:bg-red-600 hover:scale-105 transition-all duration-300 cursor-pointer"
               >
                 Logout
               </button>
             ) : (
               <Link
                 to="/login"
-                className="bg-yellow-400 text-slate-900 px-4 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors"
+                className="bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 px-5 py-2 rounded-xl font-semibold shadow-md hover:scale-105 transition-all duration-300"
               >
                 Login
               </Link>
