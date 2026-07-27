@@ -67,7 +67,7 @@ function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-white via-sky-50 to-blue-50 flex items-center justify-center">
         <p className="text-xl text-slate-600">
           Loading admin dashboard...
         </p>
@@ -111,63 +111,100 @@ function AdminDashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-100 px-4 py-10">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen relative bg-gradient-to-b from-white via-sky-50 to-blue-50 overflow-hidden">
+
+      {/* Faint blueprint grid backdrop */}
+      <div
+        className="absolute inset-0 opacity-[0.35] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(15,23,42,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.06) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
+
+      {/* Decorative blurred accents */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-300/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-10 right-0 w-[28rem] h-[28rem] bg-blue-300/25 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-14">
 
         {/* Heading */}
-        <div className="mb-8">
-          <p className="font-semibold text-yellow-600 mb-1">
-            Administration
-          </p>
-
-          <h1 className="text-4xl font-bold text-slate-900">
+        <div className="mb-10 text-center sm:text-left">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 text-amber-300 text-xs font-semibold tracking-widest uppercase shadow-sm mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
             Admin Dashboard
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 mb-3">
+            Manage Road Reports
           </h1>
 
-          <p className="text-slate-600 mt-2">
-            Review road reports and manage their progress.
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto sm:mx-0">
+            Monitor and manage all submitted road damage reports from one place.
           </p>
         </div>
 
         {/* Statistics */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard
             title="Total Reports"
+            subtitle="All time submissions"
             value={reports.length}
+            icon="📄"
+            accent="border-t-slate-900"
+            glow="bg-slate-900/5"
           />
 
           <StatCard
             title="Pending"
+            subtitle="Awaiting review"
             value={pending}
+            icon="🟡"
+            accent="border-t-rose-500"
+            glow="bg-rose-500/5"
           />
 
           <StatCard
             title="In Progress"
+            subtitle="Being worked on"
             value={inProgress}
+            icon="🛠"
+            accent="border-t-blue-500"
+            glow="bg-blue-500/5"
           />
 
           <StatCard
             title="Resolved"
+            subtitle="Issues fixed"
             value={resolved}
+            icon="✅"
+            accent="border-t-emerald-500"
+            glow="bg-emerald-500/5"
           />
         </div>
 
         {/* Search + Filters */}
-        <div className="bg-white rounded-2xl shadow-sm p-5 mb-6">
+        <div className="bg-white/90 backdrop-blur rounded-3xl shadow-lg shadow-slate-900/5 border border-slate-100 p-5 sm:p-6 mb-8">
           <div className="grid md:grid-cols-3 gap-4">
 
-            <input
-              type="text"
-              placeholder="Search title, location, citizen..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                🔍
+              </span>
+              <input
+                type="text"
+                placeholder="Search title, location, citizen..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full border border-slate-200 rounded-full pl-11 pr-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+              />
+            </div>
 
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="border border-slate-300 rounded-xl px-4 py-3 bg-white"
+              className="border border-slate-200 rounded-full px-5 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer"
             >
               <option value="All">All Severities</option>
               <option value="Low">Low</option>
@@ -178,7 +215,7 @@ function AdminDashboard() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="border border-slate-300 rounded-xl px-4 py-3 bg-white"
+              className="border border-slate-200 rounded-full px-5 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer"
             >
               <option value="All">All Statuses</option>
               <option value="Pending">Pending</option>
@@ -191,7 +228,7 @@ function AdminDashboard() {
         </div>
 
         {/* Result Count */}
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 px-1">
           <p className="text-slate-600">
             Showing{" "}
             <span className="font-bold text-slate-900">
@@ -214,7 +251,7 @@ function AdminDashboard() {
                 setSeverityFilter("All");
                 setStatusFilter("All");
               }}
-              className="text-sm font-semibold text-yellow-600 hover:text-yellow-700 cursor-pointer"
+              className="text-sm font-semibold text-amber-600 hover:text-amber-700 cursor-pointer transition"
             >
               Clear Filters
             </button>
@@ -222,16 +259,18 @@ function AdminDashboard() {
         </div>
 
         {/* Reports */}
-        <div className="space-y-5">
+        <div className="space-y-6">
           {filteredReports.length === 0 ? (
-            <div className="bg-white rounded-2xl p-10 text-center shadow-sm">
-              <div className="text-4xl mb-3">🔎</div>
+            <div className="bg-white rounded-3xl shadow-lg shadow-slate-900/5 border border-slate-100 p-16 text-center">
+              <div className="w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center text-4xl mx-auto mb-6">
+                🔎
+              </div>
 
-              <p className="font-bold text-slate-800 text-lg">
-                No reports found
+              <p className="font-bold text-slate-900 text-2xl">
+                No reports available
               </p>
 
-              <p className="text-slate-500 mt-1">
+              <p className="text-slate-500 mt-2">
                 Try changing your search or filters.
               </p>
             </div>
@@ -239,73 +278,89 @@ function AdminDashboard() {
             filteredReports.map((report) => (
               <div
                 key={report._id}
-                className="bg-white rounded-2xl shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                className="group bg-white rounded-3xl shadow-md shadow-slate-900/5 border border-slate-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
               >
                 <div className="flex flex-col md:flex-row">
 
                   {/* Image */}
                   {report.image && (
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden md:w-64 shrink-0">
                       <img
                         src={report.image}
                         alt={report.title}
-                        className="w-full md:w-56 h-52 md:h-auto object-cover transition duration-500 hover:scale-110"
+                        className="w-full h-52 md:h-full object-cover transition duration-500 group-hover:scale-110"
                       />
                     </div>
                   )}
 
                   {/* Report Content */}
-                  <div className="p-6 flex-1">
+                  <div className="p-6 sm:p-7 flex-1">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 
                       {/* Details */}
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex items-center flex-wrap gap-3 mb-2">
                           <h2 className="text-xl font-bold text-slate-900">
                             {report.title}
                           </h2>
 
-                          <span className="text-xs font-bold bg-slate-100 px-3 py-1 rounded-full">
+                          <span className="text-xs font-bold bg-amber-100 text-amber-700 px-3 py-1 rounded-full">
                             {report.severity}
+                          </span>
+
+                          <span
+                            className={`text-xs font-bold px-3 py-1 rounded-full ${
+                              report.status === "Resolved"
+                                ? "bg-green-100 text-green-700"
+                                : report.status === "In Progress"
+                                ? "bg-blue-100 text-blue-700"
+                                : report.status === "Rejected"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {report.status || "Pending"}
                           </span>
                         </div>
 
-                        <p className="text-slate-600">
+                        <p className="text-slate-500 text-sm leading-6">
                           {report.description}
                         </p>
 
-                        <p className="text-sm text-slate-500 mt-3">
-                          📍{" "}
-                          {report.location?.address ||
-                            "Location unavailable"}
-                        </p>
+                        <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm text-slate-500">
+                          <span className="flex items-center gap-1.5">
+                            📍{" "}
+                            {report.location?.address ||
+                              "Location unavailable"}
+                          </span>
 
-                        <p className="text-sm text-slate-500 mt-2">
-                          🕒 Reported on{" "}
-                          {report.createdAt
-                            ? new Date(
-                                report.createdAt
-                              ).toLocaleDateString("en-IN", {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              })
-                            : "Date unavailable"}
-                        </p>
+                          <span className="flex items-center gap-1.5">
+                            🕒 Reported on{" "}
+                            {report.createdAt
+                              ? new Date(
+                                  report.createdAt
+                                ).toLocaleDateString("en-IN", {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                })
+                              : "Date unavailable"}
+                          </span>
 
-                        {report.reportedBy && (
-                          <p className="text-sm text-slate-500 mt-2">
-                            👤{" "}
-                            {report.reportedBy.name || "Unknown user"}
-                            {report.reportedBy.email
-                              ? ` • ${report.reportedBy.email}`
-                              : ""}
-                          </p>
-                        )}
+                          {report.reportedBy && (
+                            <span className="flex items-center gap-1.5">
+                              👤{" "}
+                              {report.reportedBy.name || "Unknown user"}
+                              {report.reportedBy.email
+                                ? ` • ${report.reportedBy.email}`
+                                : ""}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       {/* Status Control */}
-                      <div className="lg:w-56">
+                      <div className="lg:w-56 shrink-0">
                         <label className="block text-sm font-semibold text-slate-600 mb-2">
                           Report Status
                         </label>
@@ -318,7 +373,7 @@ function AdminDashboard() {
                               e.target.value
                             )
                           }
-                          className="w-full border border-slate-300 rounded-xl px-4 py-3 bg-white"
+                          className="w-full border border-slate-200 rounded-full px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer font-medium"
                         >
                           <option value="Pending">
                             Pending
@@ -352,15 +407,28 @@ function AdminDashboard() {
   );
 }
 
-function StatCard({ title, value }) {
+function StatCard({ title, subtitle, value, icon, accent, glow }) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-slate-200">
-      <p className="text-slate-500 font-medium">
-        {title}
+    <div
+      className={`relative bg-white/90 backdrop-blur rounded-3xl shadow-md hover:shadow-xl p-7 border-t-4 ${accent} transition-all duration-300 hover:-translate-y-1.5`}
+    >
+      <div className={`absolute inset-0 rounded-3xl ${glow} pointer-events-none`} />
+
+      <div className="relative flex items-start justify-between mb-4">
+        <p className="text-slate-500 font-medium">
+          {title}
+        </p>
+        <span className="text-2xl" aria-hidden="true">
+          {icon}
+        </span>
+      </div>
+
+      <p className="relative text-4xl font-extrabold text-slate-900">
+        {value}
       </p>
 
-      <p className="text-3xl font-bold text-slate-900 mt-2">
-        {value}
+      <p className="relative mt-2 text-sm text-slate-400">
+        {subtitle}
       </p>
     </div>
   );
