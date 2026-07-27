@@ -52,36 +52,61 @@ function Reports() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 px-4 py-10">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen relative bg-gradient-to-b from-white via-sky-50 to-blue-50 overflow-hidden">
 
-        {/* Heading */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900">
+      {/* Faint blueprint grid backdrop */}
+      <div
+        className="absolute inset-0 opacity-[0.35] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(15,23,42,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.06) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
+
+      {/* Decorative blurred accents */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-300/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-10 right-0 w-[28rem] h-[28rem] bg-blue-300/25 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-14">
+
+        {/* Hero Header */}
+        <div className="mb-10 text-center sm:text-left">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 text-amber-300 text-xs font-semibold tracking-widest uppercase shadow-sm mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
+            Community Reports
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 mb-3">
             Road Reports
           </h1>
 
-          <p className="text-slate-500 leading-7 mt-2">
-            Explore road damage reported by citizens.
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto sm:mx-0">
+            Explore road damage reported by citizens across your city.
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-2xl shadow-sm p-5 mb-8">
+        <div className="bg-white/90 backdrop-blur rounded-3xl shadow-lg shadow-slate-900/5 border border-slate-100 p-5 sm:p-6 mb-10">
           <div className="grid md:grid-cols-3 gap-4">
 
-            <input
-              type="text"
-              placeholder="Search title, location..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                🔍
+              </span>
+              <input
+                type="text"
+                placeholder="Search title, location..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full border border-slate-200 rounded-full pl-11 pr-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
+              />
+            </div>
 
             <select
               value={severity}
               onChange={(e) => setSeverity(e.target.value)}
-              className="border border-slate-300 rounded-xl px-4 py-3 bg-white"
+              className="border border-slate-200 rounded-full px-5 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer"
             >
               <option value="All">All Severities</option>
               <option value="Low">Low</option>
@@ -92,7 +117,7 @@ function Reports() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="border border-slate-300 rounded-xl px-4 py-3 bg-white"
+              className="border border-slate-200 rounded-full px-5 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer"
             >
               <option value="All">All Statuses</option>
               <option value="Pending">Pending</option>
@@ -105,27 +130,44 @@ function Reports() {
         </div>
 
         {/* Result Count */}
-        <p className="text-slate-500 leading-7 mb-5">
+        <p className="text-slate-600 mb-5 px-1">
           Showing{" "}
           <span className="font-bold text-slate-900">
             {filteredReports.length}
           </span>{" "}
           {filteredReports.length === 1 ? "report" : "reports"}
         </p>
-        <div className="mb-10">
-          <ReportMap reports={filteredReports} />
+
+        {/* Map Card */}
+        <div className="bg-white rounded-3xl shadow-lg shadow-slate-900/5 border border-slate-100 overflow-hidden mb-12">
+          <div className="px-6 py-5 border-b border-slate-100">
+            <h2 className="text-lg font-bold text-slate-900">
+              📍 Live Road Issue Map
+            </h2>
+            <p className="text-sm text-slate-500 mt-1">
+              Track all reported infrastructure issues.
+            </p>
+          </div>
+          <div className="p-2 sm:p-3">
+            <div className="rounded-2xl overflow-hidden">
+              <ReportMap reports={filteredReports} />
+            </div>
+          </div>
         </div>
+
         {/* Reports */}
         {filteredReports.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
-            <div className="text-5xl mb-4">🔎</div>
+          <div className="bg-white rounded-3xl shadow-lg shadow-slate-900/5 border border-slate-100 p-16 text-center">
+            <div className="w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center text-4xl mx-auto mb-6">
+              🔍
+            </div>
 
-            <h2 className="text-2xl font-bold text-slate-800">
+            <h2 className="text-2xl font-bold text-slate-900">
               No reports found
             </h2>
 
             <p className="text-slate-500 mt-2">
-              Try changing your search or filters.
+              Try adjusting your search or filters.
             </p>
           </div>
         ) : (
@@ -133,20 +175,17 @@ function Reports() {
             {filteredReports.map((report) => (
               <div
                 key={report._id}
-                className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-2xl
-                                                                          hover:-translate-y-2
-                                                                          duration-300
-                                                                          transition-all"
+                className="group bg-white rounded-3xl shadow-md shadow-slate-900/5 border border-slate-100 overflow-hidden hover:shadow-2xl hover:-translate-y-2 duration-300 transition-all"
               >
 
                 {/* Image */}
                 {report.image && (
                   <div className="overflow-hidden">
-                      <img
-                          src={report.image}
-                          alt={report.title}
-                          className="w-full h-52 object-cover transition duration-500 hover:scale-110"
-                      />
+                    <img
+                      src={report.image}
+                      alt={report.title}
+                      className="w-full h-52 object-cover transition duration-500 group-hover:scale-110"
+                    />
                   </div>
                 )}
 
@@ -154,7 +193,7 @@ function Reports() {
 
                   {/* Title + Severity */}
                   <div className="flex justify-between items-start gap-3 mb-3">
-                    <h2 className="text-2xl font-bold text-slate-900">
+                    <h2 className="text-xl font-bold text-slate-900 leading-snug">
                       {report.title}
                     </h2>
 
@@ -172,25 +211,27 @@ function Reports() {
                   </div>
 
                   {/* Description */}
-                  <p className="text-slate-500 leading-7 mb-5">
+                  <p className="text-slate-500 leading-6 mb-5 text-sm">
                     {report.description}
                   </p>
 
                   {/* Location */}
-                  <p className="text-sm text-slate-500">
-                    📍{" "}
-                    {report.location?.address ||
-                      "Location unavailable"}
-                  </p>
+                  <div className="flex items-center gap-2 text-sm text-slate-500 mb-1.5">
+                    <span>📍</span>
+                    <span className="truncate">
+                      {report.location?.address || "Location unavailable"}
+                    </span>
+                  </div>
 
-                  <p className="text-sm text-slate-500 mt-2">
-                    📅 {new Date(report.createdAt).toLocaleDateString()}
-                  </p>
+                  <div className="flex items-center gap-2 text-sm text-slate-500">
+                    <span>📅</span>
+                    <span>{new Date(report.createdAt).toLocaleDateString()}</span>
+                  </div>
 
                   {/* Status */}
-                  <div className="mt-5 pt-4 border-t border-slate-200">
+                  <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2">
                     <span className="text-sm text-slate-500">
-                      Status:{" "}
+                      Status:
                     </span>
 
                     <span
