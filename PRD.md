@@ -2,7 +2,7 @@
 
 # 🚧 RoadWatch - Smart Road Damage Reporting System
 
-**Version:** 1.1
+**Version:** 1.0
 
 **Author:** Vidit Kochar
 
