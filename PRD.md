@@ -1,52 +1,49 @@
 # Product Requirements Document (PRD)
 
-# RoadWatch
-### Smart Road Damage Reporting & Management System
+# 🚧 RoadWatch - Smart Road Damage Reporting System
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Author:** Vidit Kochar
 
-**Date:** August 2026
+**Project Type:** Full Stack MERN Application
 
 ---
 
-# 1. Project Overview
+# 1. Product Overview
 
-RoadWatch is a full-stack web application that enables citizens to report road-related issues such as potholes, damaged roads, broken streetlights, road cracks, and other civic infrastructure problems.
+RoadWatch is a web-based civic infrastructure reporting platform that enables citizens to report road-related issues such as potholes, damaged roads, broken streetlights, missing manholes, and other public infrastructure problems.
 
-The platform allows users to submit reports with descriptions, severity levels, images, and location details. Administrators can monitor all reports through a centralized dashboard, update report statuses, and manage infrastructure issues efficiently.
-
-RoadWatch aims to improve communication between citizens and authorities while increasing transparency in road maintenance.
+The platform allows users to upload images, provide location details, describe the issue, and monitor the repair status. Administrators can review reports, update their status, and manage reported issues through a secure dashboard.
 
 ---
 
 # 2. Problem Statement
 
-Road damage is one of the major causes of traffic congestion and accidents.
+Many road infrastructure issues remain unresolved because there is no simple and centralized platform for citizens to report them.
 
-Existing complaint systems are often:
+Current problems include:
 
-- Difficult to use
-- Lack transparency
-- Do not provide status tracking
-- Require multiple offline processes
+- No centralized reporting system
+- Poor communication between citizens and authorities
+- Lack of transparency in issue resolution
+- Difficulty tracking complaint progress
+- Manual reporting process
 
-Citizens often have no way to know whether their complaint has been received or resolved.
-
-RoadWatch provides a centralized digital platform that makes reporting, tracking, and managing road issues simple and efficient.
+RoadWatch addresses these problems through a digital reporting and tracking platform.
 
 ---
 
 # 3. Objectives
 
-The primary objectives of RoadWatch are:
+The primary objectives are:
 
-- Allow citizens to report road damage quickly.
-- Maintain a centralized database of road issues.
-- Provide administrators with management tools.
-- Allow users to monitor report progress.
-- Improve transparency between citizens and authorities.
+- Enable citizens to report road issues digitally.
+- Provide image-based evidence for every report.
+- Store reports securely in a cloud database.
+- Allow administrators to review and update reports.
+- Improve transparency through status tracking.
+- Build a scalable and secure MERN application.
 
 ---
 
@@ -54,267 +51,137 @@ The primary objectives of RoadWatch are:
 
 ## Citizens
 
-Citizens can:
+Can:
 
-- Register
-- Login
-- Submit road damage reports
+- Register an account
+- Login securely
+- Report road damage
+- Upload photos
 - View all reports
 - Track their own reports
-- Monitor issue status
+- Update their profile
 
 ---
 
 ## Administrators
 
-Administrators can:
+Can:
 
 - Login securely
-- View every report
-- Search reports
-- Filter reports
-- Update report status
-- Manage infrastructure issues
-
----
-
-# 5. User Roles
-
-## Normal User
-
-Permissions:
-
-- Register account
-- Login
-- Create report
-- View reports
-- View personal reports
-- Logout
-
----
-
-## Admin
-
-Permissions:
-
-- All user permissions
-- Access admin dashboard
-- View all submitted reports
-- Update report status
+- View all reports
+- Change report status
 - Manage reported issues
+- Access Admin Dashboard
 
 ---
 
-# 6. Functional Requirements
+# 5. Functional Requirements
 
 ## Authentication
-
-The system shall provide:
 
 - User Registration
 - User Login
 - JWT Authentication
+- Password Hashing using bcrypt
 - Protected Routes
-- Role-based Authorization
-- Logout
+- Role-Based Authorization
 
 ---
 
 ## Report Management
 
-Users shall be able to:
+Users can:
 
-- Create report
-- Enter issue title
-- Enter description
-- Select severity
-- Enter location
-- Upload image
-- Submit report
+- Create new report
+- Upload road damage image
+- Enter location details
+- Add description
+- Set severity level
+- View report history
 
----
+Admins can:
 
-## Report Viewing
-
-The application shall provide:
-
-- Community Reports
-- Search functionality
-- Severity filters
-- Status filters
-- Report details
+- View every report
+- Change report status
+- Review citizen complaints
 
 ---
 
-## My Reports
+## Image Upload
 
-Users shall:
+RoadWatch uses **Cloudinary** for cloud-based image storage.
 
-- View submitted reports
-- Track report progress
-- View statistics
-- Monitor issue status
+Workflow:
 
----
-
-## Admin Dashboard
-
-The administrator shall:
-
-- View all reports
-- Search reports
-- Filter reports
-- Update report status
-- Monitor overall statistics
+1. User uploads image.
+2. Backend receives image using Multer.
+3. Image is uploaded to Cloudinary.
+4. Cloudinary returns a secure URL.
+5. Image URL is stored in MongoDB.
+6. Frontend displays the uploaded image.
 
 ---
 
-## Profile
+## Dashboard
 
-The application shall display:
+Citizen Dashboard
 
-- User name
-- Email
-- Account role
-- Join date
+- Total Reports
+- My Reports
+- Report Status
 
----
+Admin Dashboard
 
-# 7. Non-Functional Requirements
-
-The system should satisfy the following quality attributes.
-
-## Performance
-
-- Fast page loading
-- Optimized API responses
+- Total Reports
+- Pending Reports
+- Reports In Progress
+- Resolved Reports
 
 ---
 
-## Security
+# 6. Non-Functional Requirements
 
-- JWT Authentication
-- Password hashing using bcrypt
-- Protected APIs
-- Authorization middleware
-- Environment variables for secrets
-
----
-
-## Reliability
-
-- Proper error handling
-- Database validation
-- API validation
+- Responsive UI
+- Secure Authentication
+- Fast API Response
+- Cloud Image Storage
+- Scalable Architecture
+- Easy Maintenance
+- Mobile Friendly
 
 ---
 
-## Usability
-
-- Responsive design
-- Clean user interface
-- Mobile-friendly layout
-- Easy navigation
-
----
-
-# 8. User Flow
-
-## Citizen Flow
-
-Register
-
-↓
-
-Login
-
-↓
-
-Create Report
-
-↓
-
-Submit Report
-
-↓
-
-Track Status
-
-↓
-
-Logout
-
----
-
-## Admin Flow
-
-Login
-
-↓
-
-Access Dashboard
-
-↓
-
-View Reports
-
-↓
-
-Update Status
-
-↓
-
-Manage Reports
-
-↓
-
-Logout
-
----
-
-# 9. Technology Stack
+# 7. Technology Stack
 
 ## Frontend
 
-- React
-- React Router
+- React.js
+- Vite
 - Tailwind CSS
+- React Router DOM
 - Axios
-
----
 
 ## Backend
 
 - Node.js
 - Express.js
-
----
+- JWT Authentication
+- bcryptjs
+- Multer
 
 ## Database
 
-- MongoDB
+- MongoDB Atlas
 - Mongoose
 
----
+## Cloud Storage
 
-## Authentication
-
-- JWT
-- bcrypt
-
----
+- Cloudinary
 
 ## Deployment
 
-Frontend
-
-- Vercel
-
-Backend
-
-- Render
-
----
+- Vercel (Frontend)
+- Render (Backend)
 
 ## Version Control
 
@@ -323,75 +190,159 @@ Backend
 
 ---
 
-# 10. Core Features
+# 8. User Flow
 
-- User Authentication
-- JWT Authorization
-- Protected Routes
-- Road Damage Reporting
-- Community Reports
-- My Reports
-- Admin Dashboard
-- Profile Management
-- Report Status Tracking
-- Search
-- Filtering
-- Responsive UI
+```
+User
 
----
+↓
 
-# 11. Future Enhancements
+Register / Login
 
-Future versions of RoadWatch may include:
+↓
 
-- AI-based road damage detection
-- Live GPS location detection
-- Google Maps integration
-- Push notifications
-- Email notifications
-- Government department integration
-- Mobile application
-- Analytics Dashboard
-- Report voting system
-- Duplicate report detection
+JWT Authentication
 
----
+↓
 
-# 12. Assumptions
+Home Dashboard
 
-- Users have internet access.
-- MongoDB database is available.
-- Backend APIs are running.
-- Users provide accurate information while reporting.
-- Administrators regularly review reports.
+↓
 
----
+Create Report
 
-# 13. Constraints
+↓
 
-- Internet connection required.
-- Authentication required for protected features.
-- Admin features accessible only to authorized users.
-- Image upload size may be limited.
+Upload Image
+
+↓
+
+Cloudinary
+
+↓
+
+Store Report in MongoDB
+
+↓
+
+Admin Reviews Report
+
+↓
+
+Status Updated
+
+↓
+
+User Views Updated Status
+```
 
 ---
 
-# 14. Success Criteria
+# 9. Report Lifecycle
+
+```
+Pending
+
+↓
+
+In Progress
+
+↓
+
+Resolved
+```
+
+---
+
+# 10. Database Collections
+
+## Users
+
+Stores:
+
+- Name
+- Email
+- Password
+- Role
+- Created Date
+
+---
+
+## Reports
+
+Stores:
+
+- Title
+- Description
+- Severity
+- Status
+- Image URL
+- Location
+- User ID
+- Created Date
+
+---
+
+# 11. Security Features
+
+- JWT Authentication
+- Password Hashing
+- Protected API Routes
+- Role-Based Authorization
+- Input Validation
+- Error Handling Middleware
+- Secure Image Storage via Cloudinary
+
+---
+
+# 12. Success Metrics
 
 The project will be considered successful if:
 
-- Users can register and login successfully.
-- Reports are stored correctly.
-- Reports are visible to users.
+- Users can register and login securely.
+- Reports are successfully created.
+- Images upload correctly to Cloudinary.
+- Reports are stored in MongoDB.
 - Admin can manage reports.
-- JWT authentication protects private routes.
 - Status updates are reflected correctly.
-- The application remains responsive across devices.
+- Application is deployed successfully.
 
 ---
 
-# 15. Conclusion
+# 13. Future Enhancements
 
-RoadWatch is designed to simplify road damage reporting by providing a modern web-based platform for citizens and administrators. The system improves transparency, enables efficient issue tracking, and provides authorities with tools to manage infrastructure complaints effectively.
+- Google Maps Integration
+- Live GPS Detection
+- AI Road Damage Detection
+- Email Notifications
+- Push Notifications
+- Government Dashboard
+- Analytics Dashboard
+- Mobile Application
+- Real-time Notifications using Socket.io
 
-The project demonstrates full-stack web development concepts including authentication, REST APIs, database management, role-based authorization, frontend development, backend architecture, and deployment.
+---
+
+# 14. Assumptions
+
+- Internet connection is available.
+- Cloudinary service is active.
+- MongoDB Atlas is accessible.
+- User provides accurate information.
+- Admin regularly reviews reports.
+
+---
+
+# 15. Constraints
+
+- Requires internet connection.
+- Depends on Cloudinary availability.
+- Depends on MongoDB Atlas availability.
+- Only authenticated users can submit reports.
+- Only administrators can update report status.
+
+---
+
+# 16. Conclusion
+
+RoadWatch provides a modern, secure, and scalable platform for reporting road infrastructure issues. By combining React, Node.js, Express, MongoDB Atlas, JWT Authentication, Cloudinary image storage, and an Admin Dashboard, the system offers citizens an efficient way to report problems while enabling administrators to manage and resolve them effectively.
