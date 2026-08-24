@@ -1,55 +1,62 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import {
-  getAllReports,
-  updateReportStatus,
-} from "../services/reportService";
-
+import { getAllReports, updateReportStatus } from "../services/reportService";
 import { toast } from "react-toastify";
+import useDebounce from "../hooks/useDebounce";
+import Badge from "../components/common/Badge";
+import Card from "../components/common/Card";
 
 function AdminDashboard() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Filters
-  const [search, setSearch] = useState("");
+  // Filters & State Management with useState
+  const [searchInput, setSearchInput] = useState("");
+  // JavaScript Closures: debounced search query
+  const debouncedSearch = useDebounce(searchInput, 300);
+
   const [severityFilter, setSeverityFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
 
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
+  // Side effects with useEffect: Data fetching with cleanup
   useEffect(() => {
+    let isMounted = true;
+
     const fetchReports = async () => {
       try {
         const data = await getAllReports();
-        setReports(data);
+        if (isMounted) setReports(data);
       } catch (error) {
-        console.error("Error loading reports:", error);
+        if (isMounted) console.error("Error loading reports:", error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchReports();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleStatusChange = async (reportId, newStatus) => {
     try {
       await updateReportStatus(reportId, newStatus, token);
 
+      // Functional state update
       setReports((currentReports) =>
         currentReports.map((report) =>
-          report._id === reportId
-            ? { ...report, status: newStatus }
-            : report
+          report._id === reportId ? { ...report, status: newStatus } : report
         )
       );
 
-      toast.success("Status updated successfully!");
+      toast.success(`Status updated to "${newStatus}"!`);
     } catch (error) {
       console.error("Status update failed:", error);
-
       toast.error(
         error.response?.data?.message ||
           "You are not authorized to update this report."
@@ -68,52 +75,45 @@ function AdminDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-white via-sky-50 to-blue-50 flex items-center justify-center">
-        <p className="text-xl text-slate-600">
+        <p className="text-xl text-slate-600 font-semibold">
           Loading admin dashboard...
         </p>
       </div>
     );
   }
 
-  // Statistics use ALL reports
+  // Statistics
   const pending = reports.filter(
-    (report) => (report.status || "Pending") === "Pending"
+    (r) => (r.status || "Pending") === "Pending"
   ).length;
+  const inProgress = reports.filter((r) => r.status === "In Progress").length;
+  const resolved = reports.filter((r) => r.status === "Resolved").length;
 
-  const inProgress = reports.filter(
-    (report) => report.status === "In Progress"
-  ).length;
-
-  const resolved = reports.filter(
-    (report) => report.status === "Resolved"
-  ).length;
-
-  // Filter reports
+  // Filtered reports using debounced search
   const filteredReports = reports.filter((report) => {
-    const searchText = search.toLowerCase().trim();
+    const query = debouncedSearch.toLowerCase().trim();
 
     const matchesSearch =
-      report.title?.toLowerCase().includes(searchText) ||
-      report.description?.toLowerCase().includes(searchText) ||
-      report.location?.address?.toLowerCase().includes(searchText) ||
-      report.reportedBy?.name?.toLowerCase().includes(searchText) ||
-      report.reportedBy?.email?.toLowerCase().includes(searchText);
+      !query ||
+      report.title?.toLowerCase().includes(query) ||
+      report.description?.toLowerCase().includes(query) ||
+      report.location?.address?.toLowerCase().includes(query) ||
+      report.reportedBy?.name?.toLowerCase().includes(query) ||
+      report.reportedBy?.email?.toLowerCase().includes(query) ||
+      report.aiAnalysis?.category?.toLowerCase().includes(query);
 
     const matchesSeverity =
-      severityFilter === "All" ||
-      report.severity === severityFilter;
+      severityFilter === "All" || report.severity === severityFilter;
 
     const matchesStatus =
-      statusFilter === "All" ||
-      (report.status || "Pending") === statusFilter;
+      statusFilter === "All" || (report.status || "Pending") === statusFilter;
 
     return matchesSearch && matchesSeverity && matchesStatus;
   });
 
   return (
     <div className="min-h-screen relative bg-gradient-to-b from-white via-sky-50 to-blue-50 overflow-hidden">
-
-      {/* Faint blueprint grid backdrop */}
+      {/* Grid Pattern */}
       <div
         className="absolute inset-0 opacity-[0.35] pointer-events-none"
         style={{
@@ -123,17 +123,12 @@ function AdminDashboard() {
         }}
       />
 
-      {/* Decorative blurred accents */}
-      <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-300/30 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -top-10 right-0 w-[28rem] h-[28rem] bg-blue-300/25 rounded-full blur-3xl pointer-events-none" />
-
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-14">
-
         {/* Heading */}
         <div className="mb-10 text-center sm:text-left">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 text-amber-300 text-xs font-semibold tracking-widest uppercase shadow-sm mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
-            Admin Dashboard
+            Admin Operations · AI Incident Triage
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 mb-3">
@@ -141,11 +136,12 @@ function AdminDashboard() {
           </h1>
 
           <p className="text-lg text-slate-600 max-w-2xl mx-auto sm:mx-0">
-            Monitor and manage all submitted road damage reports from one place.
+            Review civic incident complaints, verify AI structured risk assessments,
+            and dispatch municipal work orders.
           </p>
         </div>
 
-        {/* Statistics */}
+        {/* Statistics Cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard
             title="Total Reports"
@@ -153,50 +149,42 @@ function AdminDashboard() {
             value={reports.length}
             icon="📄"
             accent="border-t-slate-900"
-            glow="bg-slate-900/5"
           />
-
           <StatCard
             title="Pending"
             subtitle="Awaiting review"
             value={pending}
             icon="🟡"
             accent="border-t-rose-500"
-            glow="bg-rose-500/5"
           />
-
           <StatCard
             title="In Progress"
             subtitle="Being worked on"
             value={inProgress}
             icon="🛠"
             accent="border-t-blue-500"
-            glow="bg-blue-500/5"
           />
-
           <StatCard
             title="Resolved"
             subtitle="Issues fixed"
             value={resolved}
             icon="✅"
             accent="border-t-emerald-500"
-            glow="bg-emerald-500/5"
           />
         </div>
 
-        {/* Search + Filters */}
+        {/* Filters */}
         <div className="bg-white/90 backdrop-blur rounded-3xl shadow-lg shadow-slate-900/5 border border-slate-100 p-5 sm:p-6 mb-8">
           <div className="grid md:grid-cols-3 gap-4">
-
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
                 🔍
               </span>
               <input
                 type="text"
-                placeholder="Search title, location, citizen..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Debounced search (title, address, citizen, AI category)..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="w-full border border-slate-200 rounded-full pl-11 pr-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
               />
             </div>
@@ -204,18 +192,18 @@ function AdminDashboard() {
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="border border-slate-200 rounded-full px-5 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer"
+              className="border border-slate-200 rounded-full px-5 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer font-medium text-slate-700"
             >
               <option value="All">All Severities</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
+              <option value="Low">Low Severity</option>
+              <option value="Medium">Medium Severity</option>
+              <option value="High">High Severity</option>
             </select>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="border border-slate-200 rounded-full px-5 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer"
+              className="border border-slate-200 rounded-full px-5 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer font-medium text-slate-700"
             >
               <option value="All">All Statuses</option>
               <option value="Pending">Pending</option>
@@ -223,213 +211,154 @@ function AdminDashboard() {
               <option value="Resolved">Resolved</option>
               <option value="Rejected">Rejected</option>
             </select>
-
           </div>
         </div>
 
-        {/* Result Count */}
+        {/* Count */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6 px-1">
-          <p className="text-slate-600">
-            Showing{" "}
-            <span className="font-bold text-slate-900">
-              {filteredReports.length}
-            </span>{" "}
-            of{" "}
-            <span className="font-bold text-slate-900">
-              {reports.length}
-            </span>{" "}
-            reports
+          <p className="text-slate-600 font-medium">
+            Showing <span className="font-bold text-slate-900">{filteredReports.length}</span> of{" "}
+            <span className="font-bold text-slate-900">{reports.length}</span> reports
           </p>
 
-          {(search ||
-            severityFilter !== "All" ||
-            statusFilter !== "All") && (
+          {(searchInput || severityFilter !== "All" || statusFilter !== "All") && (
             <button
               type="button"
               onClick={() => {
-                setSearch("");
+                setSearchInput("");
                 setSeverityFilter("All");
                 setStatusFilter("All");
               }}
               className="text-sm font-semibold text-amber-600 hover:text-amber-700 cursor-pointer transition"
             >
-              Clear Filters
+              Reset Filters
             </button>
           )}
         </div>
 
-        {/* Reports */}
+        {/* Reports List */}
         <div className="space-y-6">
           {filteredReports.length === 0 ? (
             <div className="bg-white rounded-3xl shadow-lg shadow-slate-900/5 border border-slate-100 p-16 text-center">
               <div className="w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center text-4xl mx-auto mb-6">
                 🔎
               </div>
-
-              <p className="font-bold text-slate-900 text-2xl">
-                No reports available
-              </p>
-
-              <p className="text-slate-500 mt-2">
-                Try changing your search or filters.
-              </p>
+              <p className="font-bold text-slate-900 text-2xl">No reports found</p>
+              <p className="text-slate-500 mt-2">Try adjusting your search or filters.</p>
             </div>
           ) : (
             filteredReports.map((report) => (
-              <div
-                key={report._id}
-                className="group bg-white rounded-3xl shadow-md shadow-slate-900/5 border border-slate-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
-              >
+              <Card key={report._id} hoverable className="overflow-hidden">
                 <div className="flex flex-col md:flex-row">
-
-                  {/* Image */}
                   {report.image && (
-                    <div className="overflow-hidden md:w-64 shrink-0">
+                    <div className="overflow-hidden md:w-72 shrink-0">
                       <img
                         src={report.image}
                         alt={report.title}
-                        className="w-full h-52 md:h-full object-cover transition duration-500 group-hover:scale-110"
+                        className="w-full h-52 md:h-full object-cover transition duration-500 hover:scale-105"
                       />
                     </div>
                   )}
 
-                  {/* Report Content */}
                   <div className="p-6 sm:p-7 flex-1">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-
-                      {/* Details */}
+                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                       <div className="flex-1">
-                        <div className="flex items-center flex-wrap gap-3 mb-2">
+                        <div className="flex items-center flex-wrap gap-2.5 mb-2.5">
                           <h2 className="text-xl font-bold text-slate-900">
                             {report.title}
                           </h2>
+                          <Badge>{report.severity}</Badge>
+                          <Badge variant={report.status}>{report.status || "Pending"}</Badge>
 
-                          <span className="text-xs font-bold bg-amber-100 text-amber-700 px-3 py-1 rounded-full">
-                            {report.severity}
-                          </span>
-
-                          <span
-                            className={`text-xs font-bold px-3 py-1 rounded-full ${
-                              report.status === "Resolved"
-                                ? "bg-green-100 text-green-700"
-                                : report.status === "In Progress"
-                                ? "bg-blue-100 text-blue-700"
-                                : report.status === "Rejected"
-                                ? "bg-red-100 text-red-700"
-                                : "bg-yellow-100 text-yellow-700"
-                            }`}
-                          >
-                            {report.status || "Pending"}
-                          </span>
+                          {/* AI Problem Modeling Badges */}
+                          {report.aiAnalysis?.category && (
+                            <span className="text-xs bg-slate-900 text-amber-300 font-bold px-3 py-1 rounded-full">
+                              🤖 AI: {report.aiAnalysis.category.replace(/_/g, " ")} (Urgency: {report.aiAnalysis.urgencyScore}/10)
+                            </span>
+                          )}
+                          {report.aiAnalysis?.safetyHazard && (
+                            <span className="text-xs bg-red-600 text-white font-bold px-2.5 py-1 rounded-full animate-pulse">
+                              ⚠️ High Hazard
+                            </span>
+                          )}
                         </div>
 
-                        <p className="text-slate-500 text-sm leading-6">
+                        <p className="text-slate-600 text-sm leading-relaxed mb-3">
                           {report.description}
                         </p>
 
-                        <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm text-slate-500">
-                          <span className="flex items-center gap-1.5">
-                            📍{" "}
-                            {report.location?.address ||
-                              "Location unavailable"}
-                          </span>
+                        {/* AI Recommendation Box for Municipal Admins */}
+                        {report.aiAnalysis?.actionableRecommendation && (
+                          <div className="mb-4 p-3.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-slate-800">
+                            <span className="font-bold text-amber-900 block mb-0.5">
+                              Municipal Action Recommendation:
+                            </span>
+                            {report.aiAnalysis.actionableRecommendation}
+                          </div>
+                        )}
 
-                          <span className="flex items-center gap-1.5">
+                        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-500">
+                          <span>📍 {report.location?.address || "Location unavailable"}</span>
+                          <span>
                             🕒 Reported on{" "}
                             {report.createdAt
-                              ? new Date(
-                                  report.createdAt
-                                ).toLocaleDateString("en-IN", {
+                              ? new Date(report.createdAt).toLocaleDateString("en-IN", {
                                   day: "numeric",
                                   month: "short",
                                   year: "numeric",
                                 })
-                              : "Date unavailable"}
+                              : "N/A"}
                           </span>
-
                           {report.reportedBy && (
-                            <span className="flex items-center gap-1.5">
-                              👤{" "}
-                              {report.reportedBy.name || "Unknown user"}
-                              {report.reportedBy.email
-                                ? ` • ${report.reportedBy.email}`
-                                : ""}
+                            <span>
+                              👤 {report.reportedBy.name || "Citizen"} (
+                              {report.reportedBy.email || ""})
                             </span>
                           )}
                         </div>
                       </div>
 
-                      {/* Status Control */}
-                      <div className="lg:w-56 shrink-0">
-                        <label className="block text-sm font-semibold text-slate-600 mb-2">
-                          Report Status
+                      {/* Status Selector */}
+                      <div className="lg:w-56 shrink-0 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                          Update Status
                         </label>
-
                         <select
                           value={report.status || "Pending"}
                           onChange={(e) =>
-                            handleStatusChange(
-                              report._id,
-                              e.target.value
-                            )
+                            handleStatusChange(report._id, e.target.value)
                           }
-                          className="w-full border border-slate-200 rounded-full px-4 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition cursor-pointer font-medium"
+                          className="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 font-semibold text-slate-800 cursor-pointer"
                         >
-                          <option value="Pending">
-                            Pending
-                          </option>
-
-                          <option value="In Progress">
-                            In Progress
-                          </option>
-
-                          <option value="Resolved">
-                            Resolved
-                          </option>
-
-                          <option value="Rejected">
-                            Rejected
-                          </option>
+                          <option value="Pending">Pending</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Resolved">Resolved</option>
+                          <option value="Rejected">Rejected</option>
                         </select>
                       </div>
-
                     </div>
                   </div>
-
                 </div>
-              </div>
+              </Card>
             ))
           )}
         </div>
-
       </div>
     </div>
   );
 }
 
-function StatCard({ title, subtitle, value, icon, accent, glow }) {
+function StatCard({ title, subtitle, value, icon, accent }) {
   return (
     <div
-      className={`relative bg-white/90 backdrop-blur rounded-3xl shadow-md hover:shadow-xl p-7 border-t-4 ${accent} transition-all duration-300 hover:-translate-y-1.5`}
+      className={`relative bg-white/90 backdrop-blur rounded-3xl shadow-md hover:shadow-xl p-7 border-t-4 ${accent} transition-all duration-300 hover:-translate-y-1`}
     >
-      <div className={`absolute inset-0 rounded-3xl ${glow} pointer-events-none`} />
-
-      <div className="relative flex items-start justify-between mb-4">
-        <p className="text-slate-500 font-medium">
-          {title}
-        </p>
-        <span className="text-2xl" aria-hidden="true">
-          {icon}
-        </span>
+      <div className="flex items-start justify-between mb-4">
+        <p className="text-slate-500 font-semibold text-sm">{title}</p>
+        <span className="text-2xl">{icon}</span>
       </div>
-
-      <p className="relative text-4xl font-extrabold text-slate-900">
-        {value}
-      </p>
-
-      <p className="relative mt-2 text-sm text-slate-400">
-        {subtitle}
-      </p>
+      <p className="text-4xl font-black text-slate-900">{value}</p>
+      <p className="mt-2 text-xs text-slate-400 font-medium">{subtitle}</p>
     </div>
   );
 }

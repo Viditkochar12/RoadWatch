@@ -1,64 +1,57 @@
 const path = require("path");
 const express = require("express");
-const dotenv = require("dotenv");
 const cors = require("cors");
-const multer = require("multer");
-
-// IMPORTANT: Load .env before importing files that use environment variables
-dotenv.config();
-
+const config = require("./config/env");
 const connectDB = require("./config/db");
+
+// Route imports
 const authRoutes = require("./routes/authRoutes");
 const reportRoutes = require("./routes/reportRoutes");
+const aiRoutes = require("./routes/aiRoutes");
+const sqlAnalyticsRoutes = require("./routes/sqlAnalyticsRoutes");
 
+// Error handling middleware
+const { notFoundHandler, errorHandler } = require("./middleware/errorMiddleware");
+
+// Connect to MongoDB
 connectDB();
 
 const app = express();
 
+// Security & Parsing Middleware
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/api/auth", authRoutes);
-app.use("/api/reports", reportRoutes);
 
+// Health check endpoint
 app.get("/", (req, res) => {
-  res.send("RoadWatch Backend is Running 🚀");
-});
-
-// Global Error Handler
-app.use((err, req, res, next) => {
-  // Multer errors
-  if (err instanceof multer.MulterError) {
-    if (err.code === "LIMIT_FILE_SIZE") {
-      return res.status(400).json({
-        message: "Image must be smaller than 5 MB",
-      });
-    }
-
-    return res.status(400).json({
-      message: err.message,
-    });
-  }
-
-  // Unsupported image type from uploadMiddleware
-  if (
-    err.message ===
-    "Only JPG, JPEG, PNG and WEBP images are allowed."
-  ) {
-    return res.status(400).json({
-      message: err.message,
-    });
-  }
-
-  console.error(err);
-
-  return res.status(500).json({
-    message: "Internal server error",
+  res.status(200).json({
+    message: "RoadWatch Backend API is Running 🚀",
+    environment: config.env,
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      auth: "/api/auth",
+      reports: "/api/reports",
+      ai: "/api/ai",
+      analytics: "/api/analytics/sql-queries",
+    },
   });
 });
 
-const PORT = process.env.PORT || 5000;
+// Mount Application Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/analytics", sqlAnalyticsRoutes);
+
+// Catch-all 404 handler
+app.use(notFoundHandler);
+
+// Centralized Global Error Handler
+app.use(errorHandler);
+
+const PORT = config.port;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`\x1b[32m[SERVER]\x1b[0m RoadWatch Server listening on port ${PORT} (${config.env} mode)`);
 });

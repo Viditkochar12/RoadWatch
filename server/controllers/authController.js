@@ -1,140 +1,106 @@
 const generateToken = require("../utils/generateToken");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const asyncHandler = require("../utils/asyncHandler");
+const AppError = require("../utils/appError");
 
 // Register User
-const registerUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+const registerUser = asyncHandler(async (req, res, next) => {
+  const { name, email, password } = req.body;
 
-    if (!name || name.trim().length < 2) {
-      return res.status(400).json({
-        message: "Name must be at least 2 characters",
-      });
-    }
-
-    if (!email || !email.includes("@")) {
-      return res.status(400).json({
-        message: "Please provide a valid email address",
-      });
-    }
-
-    if (!password || password.length < 6) {
-      return res.status(400).json({
-        message: "Password must be at least 6 characters",
-      });
-    }
-
-    // Check if user already exists
-    const normalizedEmail = email.trim().toLowerCase();
-
-    const userExists = await User.findOne({
-      email: normalizedEmail,
-    });
-    if (userExists) {
-      return res.status(400).json({
-        message: "User already exists",
-      });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
-    const user = await User.create({
-      name: name.trim(),
-      email: normalizedEmail,
-      password: hashedPassword,
-    });
-
-    // Never return password/hash
-    res.status(201).json({
-      message: "User registered successfully",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+  if (!name || name.trim().length < 2) {
+    return next(new AppError("Name must be at least 2 characters", 400));
   }
-};
 
-// Login User
-const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Email and password are required",
-      });
-    }
-
-    const normalizedEmail = email.trim().toLowerCase();
-
-    const user = await User.findOne({
-      email: normalizedEmail,
-    });
-
-
-    if (!user) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    const isMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
-
-    if (!isMatch) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
-    }
-
-    res.status(200).json({
-      message: "Login successful",
-      token: generateToken(user._id, user.role),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+  if (!email || !email.includes("@")) {
+    return next(new AppError("Please provide a valid email address", 400));
   }
-};
 
-// Get Logged-in User Profile
-const getProfile = async (req, res) => {
-  try {
-    const user = req.user;
+  if (!password || password.length < 6) {
+    return next(new AppError("Password must be at least 6 characters", 400));
+  }
 
-    res.status(200).json({
+  // Check if user already exists
+  const normalizedEmail = email.trim().toLowerCase();
+  const userExists = await User.findOne({ email: normalizedEmail });
+
+  if (userExists) {
+    return next(new AppError("A user with this email already exists", 400));
+  }
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create user
+  const user = await User.create({
+    name: name.trim(),
+    email: normalizedEmail,
+    password: hashedPassword,
+  });
+
+  // Never return password/hash
+  res.status(201).json({
+    success: true,
+    message: "User registered successfully",
+    user: {
       id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
       createdAt: user.createdAt,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    },
+  });
+});
+
+// Login User
+const loginUser = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(new AppError("Email and password are required", 400));
   }
-};
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = await User.findOne({ email: normalizedEmail });
+
+  if (!user) {
+    return next(new AppError("Invalid email or password", 401));
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return next(new AppError("Invalid email or password", 401));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Login successful",
+    token: generateToken(user._id, user.role),
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  });
+});
+
+// Get Logged-in User Profile
+const getProfile = asyncHandler(async (req, res) => {
+  const user = req.user;
+
+  res.status(200).json({
+    success: true,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+    },
+  });
+});
 
 module.exports = {
   registerUser,

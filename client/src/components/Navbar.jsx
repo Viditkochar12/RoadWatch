@@ -26,9 +26,9 @@ function Navbar() {
   };
 
   return (
-    <nav className="bg-slate-900 text-white shadow-lg">
+    <nav className="bg-slate-900 text-white shadow-lg sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between py-5">
+        <div className="flex items-center justify-between py-4">
           <Link
             to="/"
             onClick={closeMenu}
@@ -47,7 +47,7 @@ function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6 text-sm">
             <Link
               to="/"
               className="font-medium hover:text-yellow-300 transition-all duration-300"
@@ -67,6 +67,14 @@ function Navbar() {
               className="font-medium hover:text-yellow-300 transition-all duration-300"
             >
               Report Damage
+            </Link>
+
+            <Link
+              to="/concepts"
+              className="font-bold text-amber-300 bg-slate-800/80 px-3 py-1.5 rounded-lg hover:bg-slate-800 hover:text-yellow-200 transition-all duration-300 flex items-center gap-1.5"
+            >
+              <span>🧠</span>
+              <span>Concept Hub</span>
             </Link>
 
             {isLoggedIn && (
@@ -90,7 +98,7 @@ function Navbar() {
             {isAdmin && (
               <Link
                 to="/admin"
-                className="font-medium hover:text-yellow-300 transition-all duration-300"
+                className="font-medium text-amber-400 hover:text-yellow-300 transition-all duration-300"
               >
                 Admin
               </Link>
@@ -99,14 +107,14 @@ function Navbar() {
             {isLoggedIn ? (
               <button
                 onClick={handleLogout}
-                className="bg-red-500/90 px-5 py-2 rounded-xl font-semibold shadow-md hover:bg-red-600 hover:scale-105 transition-all duration-300 cursor-pointer"
+                className="bg-red-500/90 px-4 py-2 rounded-xl font-semibold shadow-md hover:bg-red-600 transition-all duration-300 cursor-pointer"
               >
                 Logout
               </button>
             ) : (
               <Link
                 to="/login"
-                className="bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 px-5 py-2 rounded-xl font-semibold shadow-md hover:scale-105 transition-all duration-300"
+                className="bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 px-5 py-2 rounded-xl font-bold shadow-md hover:scale-105 transition-all duration-300"
               >
                 Login
               </Link>
@@ -143,6 +151,22 @@ function Navbar() {
               Reports
             </Link>
 
+            <Link
+              to="/create-report"
+              onClick={closeMenu}
+              className="px-3 py-3 rounded-lg hover:bg-slate-800 hover:text-yellow-400"
+            >
+              Report Damage
+            </Link>
+
+            <Link
+              to="/concepts"
+              onClick={closeMenu}
+              className="px-3 py-3 rounded-lg bg-slate-800 text-amber-300 font-bold"
+            >
+              🧠 Concept Hub
+            </Link>
+
             {isLoggedIn && (
               <Link
                 to="/my-reports"
@@ -172,14 +196,6 @@ function Navbar() {
                 Admin Dashboard
               </Link>
             )}
-
-            <Link
-              to="/create-report"
-              onClick={closeMenu}
-              className="px-3 py-3 rounded-lg hover:bg-slate-800 hover:text-yellow-400"
-            >
-              Report Damage
-            </Link>
 
             {isLoggedIn ? (
               <button
