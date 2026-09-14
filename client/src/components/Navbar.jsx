@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-function Navbar() {
+// React Component Composition & Props:
+// Navbar accepts 'userRole' and 'isLoggedIn' as props to adapt navigation dynamically.
+// Default parameters provide a safe fallback to localStorage if props are not passed by the parent.
+function Navbar({
+  userRole = localStorage.getItem("role"),
+  isLoggedIn = Boolean(localStorage.getItem("token")),
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-
-  const isLoggedIn = Boolean(token);
-  const isAdmin = role === "admin";
+  // Role-based access control:
+  // Evaluates userRole prop to conditionally render the Admin navigation link
+  const isAdmin = userRole === "admin";
 
   const closeMenu = () => {
     setMenuOpen(false);
@@ -48,6 +52,7 @@ function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-6 text-sm">
+            {/* 1. Public Navigation Links: Accessible to all visitors without authentication */}
             <Link
               to="/"
               className="font-medium hover:text-yellow-300 transition-all duration-300"
@@ -77,6 +82,7 @@ function Navbar() {
               <span>Concept Hub</span>
             </Link>
 
+            {/* 2. Authenticated User Links: Conditionally rendered when isLoggedIn prop is true */}
             {isLoggedIn && (
               <Link
                 to="/my-reports"
@@ -95,6 +101,7 @@ function Navbar() {
               </Link>
             )}
 
+            {/* 3. Role-Based Navigation: Conditionally rendered only when userRole === 'admin' */}
             {isAdmin && (
               <Link
                 to="/admin"
@@ -104,6 +111,7 @@ function Navbar() {
               </Link>
             )}
 
+            {/* 4. Session Action Button: Renders Logout when isLoggedIn is true, otherwise Login */}
             {isLoggedIn ? (
               <button
                 onClick={handleLogout}
@@ -135,6 +143,7 @@ function Navbar() {
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="md:hidden border-t border-slate-700 py-4 flex flex-col gap-2">
+            {/* 1. Public Links */}
             <Link
               to="/"
               onClick={closeMenu}
@@ -167,6 +176,7 @@ function Navbar() {
               🧠 Concept Hub
             </Link>
 
+            {/* 2. Authenticated User Links: Shown when isLoggedIn prop is true */}
             {isLoggedIn && (
               <Link
                 to="/my-reports"
@@ -187,6 +197,7 @@ function Navbar() {
               </Link>
             )}
 
+            {/* 3. Role-Based Navigation: Shown only when userRole === 'admin' */}
             {isAdmin && (
               <Link
                 to="/admin"
@@ -197,6 +208,7 @@ function Navbar() {
               </Link>
             )}
 
+            {/* 4. Session Action: Logout when logged in, Login when logged out */}
             {isLoggedIn ? (
               <button
                 onClick={handleLogout}
